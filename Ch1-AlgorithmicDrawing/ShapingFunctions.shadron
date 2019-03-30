@@ -1,9 +1,14 @@
+// Implementaion of the functions described in
+// The Book of Shaders, Chapter: Algorithmic Drawing - Shaping Functions.
+
 const int WIDTH = 1280;
 const int HEIGHT = 720;
 const int PI = 3.14159265359;
 
-parameter int Function_Selector = 1 : range(1, 10);
+parameter int Function_Selector = 1 : range(1, 16);
 parameter float Exponent = 3.0 : range(0.0, 10.0);
+parameter float Min = 0.5 : range(0.0, 1.0);
+parameter float Max = 0.5 : range(0.0, 1.0);
 
 function vec4 solidColour(vec2 position)
 {
@@ -37,9 +42,53 @@ function vec4 stepGradient(vec2 position)
 
 function vec4 smoothstepGradient(vec2 position)
 {
-    return vec4(vec3(smoothstep(0.1, 0.9, position.x)), 1.0);
+    return vec4(vec3(smoothstep(Min, Max, position.x)), 1.0);
 }
 
+function vec4 modGradient(vec2 position)
+{
+    return vec4(vec3(mod(position.x, 0.5)), 1.0);
+}
+
+function vec4 fractGradient(vec2 position)
+{
+    return vec4(vec3(fract(position.x)), 1.0);
+}
+
+function vec4 ceilGradient(vec2 position)
+{
+    return vec4(vec3(ceil(position.x)), 1.0);
+}
+
+function vec4 floorGradient(vec2 position)
+{
+    return vec4(vec3(floor(position.x)), 1.0);
+}
+
+function vec4 signGradient(vec2 position)
+{
+    return vec4(vec3(sign(position.x)), 1.0);
+}
+
+function vec4 absGradient(vec2 position)
+{
+    return vec4(vec3(abs(position.x)), 1.0);
+}
+
+function vec4 clampGradient(vec2 position)
+{
+    return vec4(vec3(clamp(position.x, Min, Max)), 1.0);
+}
+
+function vec4 minGradient(vec2 position)
+{
+    return vec4(vec3(min(position.x, Min)), 1.0);
+}
+
+function vec4 maxGradient(vec2 position)
+{
+    return vec4(vec3(max(position.x, Max)), 1.0);
+}
 
 glsl vec4 shaderPicker(vec2 position)
 {
@@ -60,6 +109,24 @@ glsl vec4 shaderPicker(vec2 position)
         return stepGradient(position);
     case 7:
         return smoothstepGradient(position);
+    case 8:
+        return modGradient(position);
+    case 9:
+        return fractGradient(position);
+    case 10:
+        return ceilGradient(position);
+    case 11:
+        return floorGradient(position);
+    case 12:
+        return signGradient(position);
+    case 13:
+        return absGradient(position);
+    case 14:
+        return clampGradient(position);
+    case 15:
+        return minGradient(position);
+    case 16:
+        return maxGradient(position);
     default:
         break;
     }
