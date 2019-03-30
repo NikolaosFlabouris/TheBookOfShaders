@@ -1,0 +1,46 @@
+const int WIDTH = 1280;
+const int HEIGHT = 720;
+
+parameter int funcSelector = 1 : range(1,10);
+
+function vec4 solidColour(vec2 position)
+{
+    return vec4(1.0, 1.0, 1.0, 1.0);
+}
+
+function vec4 horiGradient(vec2 position)
+{
+    return vec4(position.x, position.x, position.x, 1.0);
+}
+
+function vec4 vertGradient(vec2 position)
+{
+    return vec4(position.y, position.y, position.y, 1.0);
+}
+
+function vec4 diagGradient(vec2 position)
+{
+    return vec4((position.x + position.y)/2, (position.x + position.y)/2, (position.x + position.y)/2, 1.0);
+}
+
+glsl vec4 shaderPicker(vec2 position)
+{
+    if(funcSelector == 1)
+    {
+        return solidColour(position);
+    }
+    else if(funcSelector == 2)
+    {
+        return horiGradient(position);
+    }
+    else if(funcSelector == 3)
+    {
+        return vertGradient(position);
+    }
+    else if(funcSelector == 4)
+    {
+        return diagGradient(position);
+    }
+}
+
+image myShader = glsl(shaderPicker, WIDTH, HEIGHT);
