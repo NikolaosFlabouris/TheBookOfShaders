@@ -1,7 +1,9 @@
 const int WIDTH = 1280;
 const int HEIGHT = 720;
+const int PI = 3.14159265359;
 
-parameter int funcSelector = 1 : range(1,10);
+parameter int Function_Selector = 1 : range(1, 10);
+parameter float Exponent = 3.0 : range(0.0, 10.0);
 
 function vec4 solidColour(vec2 position)
 {
@@ -10,36 +12,56 @@ function vec4 solidColour(vec2 position)
 
 function vec4 horiGradient(vec2 position)
 {
-    return vec4(position.x, position.x, position.x, 1.0);
+    return vec4(vec3(position.x), 1.0);
 }
 
 function vec4 vertGradient(vec2 position)
 {
-    return vec4(position.y, position.y, position.y, 1.0);
+    return vec4(vec3(position.y), 1.0);
 }
 
 function vec4 diagGradient(vec2 position)
 {
-    return vec4((position.x + position.y)/2, (position.x + position.y)/2, (position.x + position.y)/2, 1.0);
+    return vec4(vec3((position.x + position.y)/2), 1.0);
 }
+
+function vec4 expoGradient(vec2 position)
+{
+    return vec4(vec3(pow(position.x, Exponent)), 1.0);
+}
+
+function vec4 stepGradient(vec2 position)
+{
+    return vec4(vec3(step(0.5, position.x)), 1.0);
+}
+
+function vec4 smoothstepGradient(vec2 position)
+{
+    return vec4(vec3(smoothstep(0.1, 0.9, position.x)), 1.0);
+}
+
 
 glsl vec4 shaderPicker(vec2 position)
 {
-    if(funcSelector == 1)
+
+    switch(Function_Selector)
     {
+    case 1:
         return solidColour(position);
-    }
-    else if(funcSelector == 2)
-    {
+    case 2:
         return horiGradient(position);
-    }
-    else if(funcSelector == 3)
-    {
+    case 3:
         return vertGradient(position);
-    }
-    else if(funcSelector == 4)
-    {
+    case 4:
         return diagGradient(position);
+    case 5:
+        return expoGradient(position);
+    case 6:
+        return stepGradient(position);
+    case 7:
+        return smoothstepGradient(position);
+    default:
+        break;
     }
 }
 
