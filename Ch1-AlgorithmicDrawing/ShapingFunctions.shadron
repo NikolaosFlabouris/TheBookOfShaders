@@ -3,7 +3,6 @@
 
 const int WIDTH = 1280;
 const int HEIGHT = 720;
-const int PI = 3.14159265359;
 
 parameter int Function_Selector = 1 : range(1, 16);
 parameter float Exponent = 3.0 : range(0.0, 10.0);
