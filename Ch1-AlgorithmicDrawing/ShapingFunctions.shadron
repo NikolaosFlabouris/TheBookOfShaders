@@ -1,7 +1,7 @@
 // Implementaion of the functions described in
 // The Book of Shaders, Chapter: Algorithmic Drawing - Shaping Functions.
 
-const int WIDTH = 1280;
+const int WIDTH = 720;
 const int HEIGHT = 720;
 
 parameter int Function_Selector = 1 : range(1, 16);
