@@ -1,0 +1,57 @@
+// Implementaion of the functions described in
+// The Book of Shaders, Chapter: Algorithmic Drawing - Shapes.
+
+#include <hsv>
+#include <math_constants>
+
+const int WIDTH = 720;
+const int HEIGHT = 720;
+
+parameter int Function_Selector = 1 : range(1, 4);
+parameter float Border_Width = 0.1 : range(0.0, 0.5);
+
+function vec4 squareBorder(vec2 position)
+{
+    vec2 borderBotLeft = step(vec2(Border_Width), position);
+    vec2 borderTopRight = step(vec2(Border_Width), 1.0 - position);
+
+    return vec4(vec3(borderBotLeft.x * borderBotLeft.y * borderTopRight.x * borderTopRight.y), 1.0);
+}
+
+function vec4 circleGradient(vec2 position)
+{
+    return vec4(vec3(distance(position, vec2(0.5))), 1.0);
+}
+
+function vec4 circle(vec2 position)
+{
+    return vec4(vec3(step(distance(position, vec2(0.5)), Border_Width)), 1.0);
+}
+
+function vec4 smoothSquare(vec2 position)
+{
+    vec2 pos = (position * 2) - 1;
+    float square = length(max(abs(pos) - 0.3, 0.0));
+    return vec4(vec3(smoothstep(0.3, 0.4, square) * smoothstep(0.6, 0.5, square)), 1.0);
+}
+
+
+glsl vec4 shaderPicker(vec2 position)
+{
+
+    switch(Function_Selector)
+    {
+    case 1:
+        return squareBorder(position);
+    case 2:
+        return circleGradient(position);
+    case 3:
+        return circle(position);
+    case 4:
+        return smoothSquare(position);
+    default:
+        break;
+    }
+}
+
+image myShader = glsl(shaderPicker, WIDTH, HEIGHT);
