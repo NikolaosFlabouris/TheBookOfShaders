@@ -1,13 +1,12 @@
 // Implementaion of the functions described in
 // The Book of Shaders, Chapter: Algorithmic Drawing - Shapes.
 
-#include <hsv>
 #include <math_constants>
 
 const int WIDTH = 720;
 const int HEIGHT = 720;
 
-parameter int Function_Selector = 1 : range(1, 4);
+parameter int Function_Selector = 1 : range(1, 6);
 parameter float Border_Width = 0.1 : range(0.0, 0.5);
 
 function vec4 squareBorder(vec2 position)
@@ -30,15 +29,48 @@ function vec4 circle(vec2 position)
 
 function vec4 smoothSquare(vec2 position)
 {
+    // Remap position to -1 to 1 co-ord space.
     vec2 pos = (position * 2) - 1;
+    // Set size of square.
     float square = length(max(abs(pos) - 0.3, 0.0));
+    // Smoothly dip to white and back to black.
     return vec4(vec3(smoothstep(0.3, 0.4, square) * smoothstep(0.6, 0.5, square)), 1.0);
 }
 
+function vec4 cog(vec2 position)
+{
+    // Remap position to 0.5 to -0.5.
+    vec2 pos = vec2(0.5) - position;
+
+    float radius = length(pos) * 2.0;
+    // Angle about the centre.
+    float angle = atan(pos.y, pos.x);
+    // 10 teeth adjusted to approriate size with a circle of radius 0.5.
+    float cog = smoothstep(-0.5, 1.0, cos(angle * 10.0)) * 0.2 + 0.5;
+
+    // Create a sharp edge. Radius of white space varies with angle.
+    return vec4(vec3(1.0 - smoothstep(cog, cog + 0.0001, radius)), 1.0);
+}
+
+function vec4 polygons(vec2 position)
+{
+    // Remap position to -1 to 1 co-ord space.
+    vec2 pos = (position * 2) - 1;
+
+    int numOfSides = 3;
+
+    // Angle and radius of current pixel.
+    float angle = atan(pos.x, pos.y) + PI;
+    float radius = (PI * 2)/float(numOfSides);
+
+    float distance = cos(floor(0.5 + angle/radius) * radius - angle) * length(pos);
+
+    // Create a sharp edge.
+    return vec4(vec3(1.0 - smoothstep(0.4, 0.41, distance)), 1.0);
+}
 
 glsl vec4 shaderPicker(vec2 position)
 {
-
     switch(Function_Selector)
     {
     case 1:
@@ -49,6 +81,10 @@ glsl vec4 shaderPicker(vec2 position)
         return circle(position);
     case 4:
         return smoothSquare(position);
+    case 5:
+        return cog(position);
+    case 6:
+        return polygons(position);
     default:
         break;
     }
