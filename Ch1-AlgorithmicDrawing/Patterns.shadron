@@ -81,16 +81,40 @@ glsl vec4 animatedCircles(vec2 position)
     // Translate local coordinates.
     pos -= vec2(0.5);
     // Create circle.
-    vec3 circle = vec3(smoothstep(0.45, 0.4501, length(pos)));
+    vec3 circle = vec3(abs(sin(shadron_Time*3)), abs(sin(shadron_Time*1.2)), abs(cos(shadron_Time*0.8))) * (1-smoothstep(0.45, 0.4501, length(pos)));
     return vec4(circle, 1.0);
 }
 
 glsl vec4 truchetTile(vec2 position)
 {
+    // More elegant solution in the book.
+
     vec2 pos = position * 5.0;
     pos = fract(pos);
 
-    vec3 truchet = 1 - (vec3(step(pos.x, pos.y)));
+    // Rotate by inverting axis based on column or row number.
+    if(mod(floor(position.y * 5.0), 2.0) == 1.0)
+    {
+        pos.y = abs(1-pos.y);
+    }
+    else
+    {
+        pos.x = abs(1-pos.x);
+        pos.y = abs(1-pos.y);
+    }
+
+    if(mod(floor(position.x * 5.0), 2.0) == 0.0)
+    {
+        pos.x = abs(1-pos.x);
+    }
+    else
+    {
+        pos.x = abs(1-pos.x);
+        pos.y = abs(1-pos.y);
+    }
+
+    vec3 truchet = 1-(vec3(step(pos.x, pos.y)));
+
     return vec4(truchet, 1.0);
 }
 
