@@ -1,0 +1,7 @@
+// Implementaion of the functions described in
+// The Book of Shaders, Chapter: Generative Designs - Random.
+
+// Many of the functions in the chapter are for learning about how
+// the random functions are calculated. A little bit too low level
+// as a library with noise functions will often be available, no
+// need to implement them. Will add functions later if required.
