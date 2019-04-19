@@ -1,5 +1,5 @@
 // Implementaion of the functions described in
-// The Book of Shaders, Chapter: Algorithmic Drawing - Shapes.
+// The Book of Shaders, Chapter: Algorithmic Drawing - Matrices.
 
 #include <math_constants>
 
