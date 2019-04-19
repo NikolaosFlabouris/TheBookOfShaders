@@ -1,0 +1,36 @@
+// Implementaion of the functions described in
+// The Book of Shaders, Chapter: Generative Designs - Celluar Noise.
+
+#include <hsv>
+#include <math_constants>
+
+const int WIDTH = 720;
+const int HEIGHT = 720;
+
+parameter int Function_Selector = 1 : range(1, 3);
+
+// A sudo-random function.
+glsl float random(vec2 pos)
+{
+    return fract(sin(dot(pos, vec2(12.9898, 78.233))) * 43758.5453123);
+}
+
+glsl vec4 funct(vec2 position)
+{
+    return vec4(1.0);
+}
+
+glsl vec4 shaderPicker(vec2 position)
+{
+    switch(Function_Selector)
+    {
+    case 1:
+        return funct(position);
+    case 2:
+    case 3:
+    default:
+        break;
+    }
+}
+
+image myShader = glsl(shaderPicker, WIDTH, HEIGHT);
