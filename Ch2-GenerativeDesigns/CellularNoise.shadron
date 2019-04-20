@@ -59,7 +59,7 @@ glsl vec4 distancePoints(vec2 position)
 // as the colour. Move location of points within the tiles over time.
 glsl vec4 celluarNoise(vec2 position)
 {
-    vec2 scaledPos = position * 3.0;
+    vec2 scaledPos = position * Scale_Factor;
 
     vec2 region = floor(scaledPos);
     vec2 localPos = fract(scaledPos);
@@ -137,4 +137,4 @@ glsl vec4 shaderPicker(vec2 position)
 
 animation myShader = glsl(shaderPicker, WIDTH, HEIGHT);
 
-export gif(myShader, "Voronoi.gif", 20, 6.2831, true);
+export gif(myShader, "Voronoi.gif", 30, 6.2831, true);
