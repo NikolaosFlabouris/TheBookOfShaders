@@ -117,7 +117,7 @@ glsl vec4 Voronoi(vec2 position)
         }
     }
 
-    return vec4(vec3(minDist, nearestPoint.x, nearestPoint.y), 1.0);
+    return vec4(hsv(nearestPoint.x, nearestPoint.y, 1.0), 1.0);
 }
 
 glsl vec4 shaderPicker(vec2 position)
