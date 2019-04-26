@@ -24,14 +24,113 @@ procedure updateMousePos(vec2 mouse)
 event mouse_position() = updateMousePos;
 
 // A deterministic random function.
-glsl vec2 random2(vec2 pos)
-{
-    return fract(sin(vec2(dot(pos, vec2(127.1, 311.7)), dot(pos, vec2(269.5, 183.3)))) * 43758.5453);
+glsl float random (in vec2 st) {
+    return fract(sin(dot(st.xy, vec2(12.9898,78.233))) * 43758.5453123);
 }
 
-glsl vec4 funct(vec2 position)
+// Based on Morgan McGuire @morgan3d
+// https://www.shadertoy.com/view/4dS3Wd
+glsl float noise (in vec2 st) {
+    vec2 i = floor(st);
+    vec2 f = fract(st);
+
+    // Four corners in 2D of a tile
+    float a = random(i);
+    float b = random(i + vec2(1.0, 0.0));
+    float c = random(i + vec2(0.0, 1.0));
+    float d = random(i + vec2(1.0, 1.0));
+
+    vec2 u = f * f * (3.0 - 2.0 * f);
+
+    return mix(a, b, u.x) + (c - a)* u.y * (1.0 - u.x) + (d - b) * u.x * u.y;
+}
+
+// Fractal Brownian Motion.
+glsl float fbm(vec2 position)
 {
-    return vec4(vec3(1.0),1.0);
+    // Properties
+    const int octaves = 8;
+    float lacunarity = 2.0;
+    float gain = 0.5;
+
+    // Initial values
+    float value = 0.0;
+    float amplitude = 0.5;
+    float frequency = 1.0;
+
+    // Loop of octaves
+    for (int i = 0; i < octaves; i++) {
+        value += amplitude * noise(frequency * position);
+        frequency *= lacunarity;
+        amplitude *= gain;
+    }
+
+    return value;
+}
+
+glsl vec4 basicFBM(vec2 position)
+{
+    vec2 pos = position * 5;
+
+    return vec4(vec3(fbm(pos)),1.0);
+}
+
+glsl vec4 domainWraping(vec2 position)
+{
+    vec2 pos = position * 5;
+    vec3 color = vec3(0.0);
+    vec2 q = vec2(0.);
+    q.x = fbm( pos + 0.00 * shadron_Time);
+    q.y = fbm( pos + vec2(1.0));
+
+    vec2 r = vec2(0.);
+    r.x = fbm(pos + 1.0 * q + vec2(1.7,9.2) + 0.15 * shadron_Time);
+    r.y = fbm(pos + 1.0 * q + vec2(8.3,2.8) + 0.126 * shadron_Time);
+
+    float f = fbm(pos + r);
+
+    color = mix(vec3(0.101961, 0.619608, 0.666667),
+                vec3(0.666667, 0.666667, 0.498039),
+                clamp((f * f) * 4.0, 0.0, 1.0));
+
+    color = mix(color,
+                vec3(0.0, 0.0, 0.164706),
+                clamp(length(q), 0.0, 1.0));
+
+    color = mix(color,
+                vec3(0.666667, 1, 1),
+                clamp(length(r.x), 0.0, 1.0));
+
+    return vec4((f * f * f + 0.6 * f * f + 0.5 * f) * color, 1.0);
+}
+
+glsl vec4 domainWrapingCustom(vec2 position)
+{
+    vec2 pos = position * 5;
+    vec3 color = vec3(0.0);
+    vec2 q = vec2(0.0);
+    q.x = fbm( pos + 0.0 * shadron_Time);
+    q.y = fbm( pos + vec2(1.0));
+
+    vec2 r = vec2(0.0);
+    r.x = fbm(pos + 1.0 * q + vec2(1.7,9.2) + 0.15 * shadron_Time);
+    r.y = fbm(pos + 1.0 * q + vec2(8.3,2.8) + 0.126 * shadron_Time);
+
+    float f = fbm(pos + r);
+
+    color = mix(vec3(0.601961, 0.619608, 0.166667),
+                vec3(0.666667, 0.666667, 0.498039),
+                clamp((f * f) * 4.0, 0.0, 1.0));
+
+    color = mix(color,
+                vec3(0.9, 0.5, 0.164706),
+                clamp(length(q), 0.0, 1.0));
+
+    color = mix(color,
+                vec3(0.966667, 0.9, 0.7),
+                clamp(length(r.x), 0.0, 1.0));
+
+    return vec4((f * f * f + 0.6 * f * f + 0.5 * f) * color, 1.0);
 }
 
 glsl vec4 shaderPicker(vec2 position)
@@ -39,7 +138,11 @@ glsl vec4 shaderPicker(vec2 position)
     switch(Function_Selector)
     {
     case 1:
-        return funct(position);
+        return basicFBM(position);
+    case 2:
+        return domainWraping(position);
+    case 3:
+        return domainWrapingCustom(position);
     default:
         break;
     }
@@ -47,4 +150,4 @@ glsl vec4 shaderPicker(vec2 position)
 
 animation myShader = glsl(shaderPicker, WIDTH, HEIGHT);
 
-export gif(myShader, "myGif.gif", 30, 6.2831, true);
+export gif(myShader, "myGif.gif", 20, 3.0, true);
